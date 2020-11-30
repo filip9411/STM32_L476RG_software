@@ -76,6 +76,8 @@ void Error_Handler(void);
 #define LD2_GPIO_Port GPIOA
 #define RE_inv_Pin GPIO_PIN_13
 #define RE_inv_GPIO_Port GPIOB
+#define LTC3128_PGOOD_Pin GPIO_PIN_14
+#define LTC3128_PGOOD_GPIO_Port GPIOB
 #define LTC3105_PGOOD_Pin GPIO_PIN_9
 #define LTC3105_PGOOD_GPIO_Port GPIOC
 #define UART_TX_Trans_Pin GPIO_PIN_9
