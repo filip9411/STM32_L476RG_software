@@ -62,10 +62,8 @@ void Error_Handler(void);
 #define B1_GPIO_Port GPIOC
 #define ADC_VCC_Voltage_Pin GPIO_PIN_0
 #define ADC_VCC_Voltage_GPIO_Port GPIOC
-#define SWITCH_1A_Pin GPIO_PIN_1
-#define SWITCH_1A_GPIO_Port GPIOC
-#define SWITCH_2A_Pin GPIO_PIN_2
-#define SWITCH_2A_GPIO_Port GPIOC
+#define SWITCH_Pin GPIO_PIN_1
+#define SWITCH_GPIO_Port GPIOC
 #define USART_TX_Pin GPIO_PIN_2
 #define USART_TX_GPIO_Port GPIOA
 #define USART_RX_Pin GPIO_PIN_3
