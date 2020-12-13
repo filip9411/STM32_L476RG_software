@@ -36,6 +36,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -172,6 +175,19 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  /* Prevent unused argument(s) compilation warning */
+  if (GPIO_Pin = B1_Pin)
+  {
+	  HAL_UART_Transmit(huart, pData, Size, Timeout);
+  }
+
+  /* NOTE: This function should not be modified, when the callback is needed,
+           the HAL_GPIO_EXTI_Callback could be implemented in the user file
+   */
+}
 
 /* USER CODE END 4 */
 
