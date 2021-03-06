@@ -1,0 +1,14 @@
+1. Pomiar napięcia na magistrali VCC i zapisywanie go w zmiennej globalnej
+2. Sterowanie switchem na podstawie napięcie na magistrali VCC i aktualnych decyzji procesora
+3. Obsłużyć sygnał wakeup na pinie PA0
+4. Utworzyć maskę dostępności zasilania i wypełniać ją odpowiednimi bitami
+   4.1 Obsłużyć sygnał LTC3109_PGOOD na pinie PA4
+   4.2 Obsłużyć sygnał LTC3128_PGOOD na pinie PB14
+   4.3 Obsłużyć sygnał LTC3105_PGOOD na pinie PC9
+5. Obsłużyć komunikację 
+   5.1 Zaprojektować protokół komunikacyjny i ramkę wymiany danych
+   5.2 Obsłużyć sygnał DE (Driver Enable SP3485) na pinie PB5
+   5.3 Obsłużyć sygnał REinv (Receiver Enable inverted SP3485) na pinie PB13
+   5.4 Obsłużyć komunikację UART Tx na pinie PA9
+   5.5 W drugiej kolejności komunikacja UART Rx na pinie PA10 
+6. Komunikacja optyczna diodą LD2 na pinie PA5
