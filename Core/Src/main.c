@@ -37,6 +37,7 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
+#define TEST_UART
 
 /* USER CODE END PD */
 
@@ -185,14 +186,16 @@ void SystemClock_Config(void)
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   /* Prevent unused argument(s) compilation warning */
 {
+#if defined(TEST_UART)
   if (GPIO_Pin == B1_Pin)
   {
+	  uint8_t data[11];
+	  uint16_t size = 0;
 
+	  size = sprintf(data, "TEST_MESSAGE");
+	  HAL_UART_Transmit(&huart1, &data, size, 100);
   }
-
-  /* NOTE: This function should not be modified, when the callback is needed,
-           the HAL_GPIO_EXTI_Callback could be implemented in the user file
-   */
+#endif
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
