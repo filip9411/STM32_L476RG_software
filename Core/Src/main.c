@@ -189,7 +189,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 #if defined(TEST_UART)
   if (GPIO_Pin == B1_Pin)
   {
-	  uint8_t data[11];
+	  uint8_t data[13];
 	  uint16_t size = 0;
 
 	  size = sprintf(data, "TEST_MESSAGE");
