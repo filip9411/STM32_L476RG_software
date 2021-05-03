@@ -1,5 +1,6 @@
 ################################################################################
 # Automatically-generated file. Do not edit!
+# Toolchain: GNU Tools for STM32 (9-2020-q2-update)
 ################################################################################
 
 -include ../makefile.init
@@ -28,6 +29,12 @@ endif
 
 -include ../makefile.defs
 
+OPTIONAL_TOOL_DEPS := \
+$(wildcard ../makefile.defs) \
+$(wildcard ../makefile.init) \
+$(wildcard ../makefile.targets) \
+
+
 BUILD_ARTIFACT_NAME := Optical_power_managment
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX := 
@@ -54,22 +61,22 @@ all: main-build
 main-build: Optical_power_managment.elf secondary-outputs
 
 # Tool invocations
-Optical_power_managment.elf: $(OBJS) $(USER_OBJS) C:\Users\Filip\ Kuchta\Desktop\Soft\ do\ mgr\STM32_L476RG_software\STM32L476RGTX_FLASH.ld
+Optical_power_managment.elf: $(OBJS) $(USER_OBJS) C:\Users\Filip\ Kuchta\Desktop\Soft\ do\ mgr\STM32_L476RG_software\STM32L476RGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	arm-none-eabi-gcc -o "Optical_power_managment.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Filip Kuchta\Desktop\Soft do mgr\STM32_L476RG_software\STM32L476RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Optical_power_managment.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-default.size.stdout: $(EXECUTABLES)
+default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	arm-none-eabi-size  $(EXECUTABLES)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-Optical_power_managment.list: $(EXECUTABLES)
+Optical_power_managment.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "Optical_power_managment.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-Optical_power_managment.bin: $(EXECUTABLES)
+Optical_power_managment.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "Optical_power_managment.bin"
 	@echo 'Finished building: $@'
 	@echo ' '

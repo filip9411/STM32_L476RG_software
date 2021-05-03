@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "adc.h"
+#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -36,7 +37,6 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 
 /* USER CODE END PD */
 
@@ -56,6 +56,9 @@ uint16_t ADC_measure;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 
 /* USER CODE END PFP */
 
@@ -97,11 +100,14 @@ int main(void)
   MX_ADC1_Init();
   MX_USART1_UART_Init();
   MX_ADC2_Init();
+  MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
 
   // ADC measure
   HAL_ADC_Start(&hadc1);
-  // ADC measure
+
+  // Timer
+  HAL_TIM_Base_Start_IT(&htim6);
 
   /* USER CODE END 2 */
 
@@ -109,13 +115,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  if(HAL_ADC_PollForConversion(&hadc1, 100) == HAL_OK)
-	  {
-		  ADC_measure = HAL_ADC_GetValue(&hadc1);
-		  HAL_ADC_Start(&hadc1);
-	  }
 
-	  HAL_PWR_EnterSLEEPMode(Regulator, SLEEPEntry)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -182,18 +182,25 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
-//void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-//  /* Prevent unused argument(s) compilation warning */
-//{
-//  if (GPIO_Pin = B1_Pin)
-//  {
-//	  HAL_UART_Transmit(huart, pData, Size, Timeout);
-//  }
-//
-//  /* NOTE: This function should not be modified, when the callback is needed,
-//           the HAL_GPIO_EXTI_Callback could be implemented in the user file
-//   */
-//}
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+  /* Prevent unused argument(s) compilation warning */
+{
+  if (GPIO_Pin == B1_Pin)
+  {
+
+  }
+
+  /* NOTE: This function should not be modified, when the callback is needed,
+           the HAL_GPIO_EXTI_Callback could be implemented in the user file
+   */
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+	if(htim->Instance == TIM6){
+		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+	}
+}
 
 /* USER CODE END 4 */
 
