@@ -193,7 +193,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	  uint16_t size = 0;
 
 	  size = sprintf(data, "TEST_MESSAGE");
-	  HAL_UART_Transmit(&huart1, &data, size, 100);
+	  HAL_UART_Transmit(&huart1, &data, size, HAL_MAX_DELAY);
   }
 #endif
 }
