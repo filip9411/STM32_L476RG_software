@@ -54,7 +54,8 @@
 
 /* USER CODE BEGIN PV */
 
-uint16_t ADC_measure;
+uint16_t temp_measure_raw;
+float temp_measure;
 uint8_t power_status = 0x00;
 
 /* USER CODE END PV */
@@ -62,6 +63,8 @@ uint8_t power_status = 0x00;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
+
+float tempConversion(uint16_t raw_data);
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
@@ -111,6 +114,7 @@ int main(void)
 
   // ADC measure
   HAL_ADC_Start(&hadc1);
+  HAL_ADC_Start(&hadc2);
 
   // Timer
   HAL_TIM_Base_Start_IT(&htim6);
@@ -146,6 +150,13 @@ int main(void)
 	  else
 	  {
 		  power_status &= ~MASK_LTC3105_PGOOD;
+	  }
+
+	  if(HAL_ADC_PollForConversion(&hadc1, 10))
+	  {
+		  temp_measure_raw = HAL_ADC_GetValue(&hadc1);
+		  temp_measure = tempConversion(temp_measure_raw);
+		  HAL_ADC_Start(&hadc1);
 	  }
 
     /* USER CODE END WHILE */
@@ -214,6 +225,22 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
+float tempConversion(uint16_t raw_data)
+{
+	float ret = 0;
+	float v_sense = 0;
+
+	const float V25 = 0.76;
+	const float avg_slope = 0.0025;
+	const float supply_voltage = 3.0;
+	const float adc_resolution = 4095.0;
+
+	v_sense = (supply_voltage * raw_data) / adc_resolution;
+	ret = ((v_sense - V25) / avg_slope) + 25;
+
+	return ret;
+}
+
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   /* Prevent unused argument(s) compilation warning */
 {
@@ -229,7 +256,11 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	  HAL_UART_Transmit(&huart1, &data1, size, HAL_MAX_DELAY);
 	  size = sprintf(data2, "TEST_MESSAGE_UART2_");
 	  HAL_UART_Transmit(&huart2, &data2, size, HAL_MAX_DELAY);
+
 	  HAL_UART_Transmit(&huart2, &power_status, sizeof(power_status), HAL_MAX_DELAY);
+
+	  HAL_UART_Transmit(&huart2, &temp_measure, sizeof(temp_measure), HAL_MAX_DELAY);
+
   }
 #endif
 }
