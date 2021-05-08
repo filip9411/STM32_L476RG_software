@@ -39,6 +39,10 @@
 
 #define TEST_UART
 
+#define MASK_LTC3105_PGOOD 0x01
+#define MASK_LTC3109_PGOOD 0x02
+#define MASK_LTC3128_PGOOD 0x04
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -51,6 +55,7 @@
 /* USER CODE BEGIN PV */
 
 uint16_t ADC_measure;
+uint8_t power_status = 0x00;
 
 /* USER CODE END PV */
 
@@ -116,6 +121,32 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  if(HAL_GPIO_ReadPin(LTC3105_PGOOD_GPIO_Port, LTC3105_PGOOD_Pin) == 1)
+	  {
+		  power_status |= MASK_LTC3105_PGOOD;
+	  }
+	  else
+	  {
+		  power_status &= ~MASK_LTC3105_PGOOD;
+	  }
+
+	  if(HAL_GPIO_ReadPin(LTC3109_PGOOD_GPIO_Port, LTC3109_PGOOD_Pin) == 1)
+	  {
+		  power_status |= MASK_LTC3109_PGOOD;
+	  }
+	  else
+	  {
+		  power_status &= ~MASK_LTC3109_PGOOD;
+	  }
+
+	  if(HAL_GPIO_ReadPin(LTC3128_PGOOD_GPIO_Port, LTC3128_PGOOD_Pin) == 1)
+	  {
+		  power_status |= MASK_LTC3105_PGOOD;
+	  }
+	  else
+	  {
+		  power_status &= ~MASK_LTC3105_PGOOD;
+	  }
 
     /* USER CODE END WHILE */
 
