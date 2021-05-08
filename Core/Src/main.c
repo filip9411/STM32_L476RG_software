@@ -230,14 +230,12 @@ float tempConversion(uint16_t raw_data)
 	float ret = 0;
 	float v_sense = 0;
 
-	const float V25 = 0.76;
-	const float avg_slope = 0.0025;
-	const float supply_voltage = 3.0;
-	const float adc_resolution = 4095.0;
+	const float TS_CAL1_TEMP = TEMPSENSOR_CAL1_TEMP;
+	const float TS_CAL2_TEMP = TEMPSENSOR_CAL2_TEMP;
+	const float TS_CAL1 = *TEMPSENSOR_CAL1_ADDR;
+	const float TS_CAL2 = *TEMPSENSOR_CAL2_ADDR;
 
-	v_sense = (supply_voltage * raw_data) / adc_resolution;
-	ret = ((v_sense - V25) / avg_slope) + 25;
-
+	ret = (((TS_CAL2_TEMP - TS_CAL1_TEMP) / (TS_CAL2 - TS_CAL1)) * (raw_data - TS_CAL1)) + 30;
 	return ret;
 }
 
@@ -248,19 +246,14 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   if (GPIO_Pin == B1_Pin)
   {
 	  uint8_t data1[20];
-	  uint8_t data2[20];
+	  uint8_t data2[100];
 
 	  uint16_t size = 0;
 
 	  size = sprintf(data1, "TEST_MESSAGE_UART1_");
 	  HAL_UART_Transmit(&huart1, &data1, size, HAL_MAX_DELAY);
-	  size = sprintf(data2, "TEST_MESSAGE_UART2_");
+	  size = sprintf(data2, "TEST_MESSAGE_UART2 POWER_STATUS = %o TEMP = %f\n", power_status, temp_measure);
 	  HAL_UART_Transmit(&huart2, &data2, size, HAL_MAX_DELAY);
-
-	  HAL_UART_Transmit(&huart2, &power_status, sizeof(power_status), HAL_MAX_DELAY);
-
-	  HAL_UART_Transmit(&huart2, &temp_measure, sizeof(temp_measure), HAL_MAX_DELAY);
-
   }
 #endif
 }
