@@ -40,9 +40,9 @@
 
 #define TEST_UART
 
-#define MASK_LTC3105_PGOOD 0x01
-#define MASK_LTC3109_PGOOD 0x02
-#define MASK_LTC3128_PGOOD 0x04
+#define MASK_LTC3105_PGOOD 0x01U
+#define MASK_LTC3109_PGOOD 0x02U
+#define MASK_LTC3128_PGOOD 0x04U
 
 /* USER CODE END PD */
 
@@ -57,7 +57,7 @@
 
 uint32_t dma_temp_measure_raw;
 uint32_t dma_vcc_measure_raw;
-uint8_t power_status = 0x00;
+uint8_t power_status = 0x00U;
 
 /* USER CODE END PV */
 
