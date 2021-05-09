@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "adc.h"
+#include "dma.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -54,7 +55,7 @@
 
 /* USER CODE BEGIN PV */
 
-uint32_t temp_measure_raw;
+uint32_t dma_temp_measure_raw;
 float temp_measure;
 uint8_t power_status = 0x00;
 
@@ -63,8 +64,6 @@ uint8_t power_status = 0x00;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
-float tempConversion(uint32_t raw_data);
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
@@ -105,6 +104,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_USART2_UART_Init();
   MX_ADC1_Init();
   MX_USART1_UART_Init();
@@ -113,8 +113,9 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   // ADC measure
-  HAL_ADC_Start(&hadc1);
+  //HAL_ADC_Start(&hadc1);
   HAL_ADC_Start(&hadc2);
+  HAL_ADC_Start_DMA(&hadc1, &dma_temp_measure_raw, 1);
 
   // Timer
   HAL_TIM_Base_Start_IT(&htim6);
@@ -150,13 +151,6 @@ int main(void)
 	  else
 	  {
 		  power_status &= ~MASK_LTC3105_PGOOD;
-	  }
-
-	  if(HAL_ADC_PollForConversion(&hadc1, 10))
-	  {
-		  temp_measure_raw = HAL_ADC_GetValue(&hadc1);
-		  temp_measure = tempConversion(temp_measure_raw);
-		  HAL_ADC_Start(&hadc1);
 	  }
 
     /* USER CODE END WHILE */
@@ -225,21 +219,6 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
-float tempConversion(uint32_t raw_data)
-{
-	float ret = 0;
-
-	const int32_t TS_CAL1_TEMP = (int32_t)(TEMPSENSOR_CAL1_TEMP);
-	const int32_t TS_CAL2_TEMP = (int32_t)(TEMPSENSOR_CAL2_TEMP);
-	const uint16_t TS_CAL1 = (uint16_t)(*TEMPSENSOR_CAL1_ADDR);
-	const uint16_t TS_CAL2 = (uint16_t)(*TEMPSENSOR_CAL2_ADDR);
-	const uint16_t T_CAL = (uint16_t)(30);
-
-	ret = (float)((((TS_CAL2_TEMP - TS_CAL1_TEMP) / (TS_CAL2 - TS_CAL1)) * (raw_data - TS_CAL1)) + T_CAL);
-
-	return ret;
-}
-
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   /* Prevent unused argument(s) compilation warning */
 {
@@ -253,7 +232,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 	  size = sprintf(data1, "TEST_MESSAGE_UART1_");
 	  HAL_UART_Transmit(&huart1, &data1, size, HAL_MAX_DELAY);
-	  size = sprintf(data2, "TEST_MESSAGE_UART2 POWER_STATUS = %o TEMP = %d\n", power_status, temp_measure_raw);
+	  size = sprintf(data2, "TEST_MESSAGE_UART2 POWER_STATUS = %o TEMP = %d\n", power_status, dma_temp_measure_raw);
 	  HAL_UART_Transmit(&huart2, &data2, size, HAL_MAX_DELAY);
   }
 #endif
