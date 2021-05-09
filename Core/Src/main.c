@@ -54,7 +54,7 @@
 
 /* USER CODE BEGIN PV */
 
-uint16_t temp_measure_raw;
+uint32_t temp_measure_raw;
 float temp_measure;
 uint8_t power_status = 0x00;
 
@@ -64,7 +64,7 @@ uint8_t power_status = 0x00;
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 
-float tempConversion(uint16_t raw_data);
+float tempConversion(uint32_t raw_data);
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
@@ -225,17 +225,18 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
-float tempConversion(uint16_t raw_data)
+float tempConversion(uint32_t raw_data)
 {
 	float ret = 0;
-	float v_sense = 0;
 
-	const float TS_CAL1_TEMP = TEMPSENSOR_CAL1_TEMP;
-	const float TS_CAL2_TEMP = TEMPSENSOR_CAL2_TEMP;
-	const float TS_CAL1 = *TEMPSENSOR_CAL1_ADDR;
-	const float TS_CAL2 = *TEMPSENSOR_CAL2_ADDR;
+	const int32_t TS_CAL1_TEMP = (int32_t)(TEMPSENSOR_CAL1_TEMP);
+	const int32_t TS_CAL2_TEMP = (int32_t)(TEMPSENSOR_CAL2_TEMP);
+	const uint16_t TS_CAL1 = (uint16_t)(*TEMPSENSOR_CAL1_ADDR);
+	const uint16_t TS_CAL2 = (uint16_t)(*TEMPSENSOR_CAL2_ADDR);
+	const uint16_t T_CAL = (uint16_t)(30);
 
-	ret = (((TS_CAL2_TEMP - TS_CAL1_TEMP) / (TS_CAL2 - TS_CAL1)) * (raw_data - TS_CAL1)) + 30;
+	ret = (float)((((TS_CAL2_TEMP - TS_CAL1_TEMP) / (TS_CAL2 - TS_CAL1)) * (raw_data - TS_CAL1)) + T_CAL);
+
 	return ret;
 }
 
@@ -252,7 +253,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 	  size = sprintf(data1, "TEST_MESSAGE_UART1_");
 	  HAL_UART_Transmit(&huart1, &data1, size, HAL_MAX_DELAY);
-	  size = sprintf(data2, "TEST_MESSAGE_UART2 POWER_STATUS = %o TEMP = %f\n", power_status, temp_measure);
+	  size = sprintf(data2, "TEST_MESSAGE_UART2 POWER_STATUS = %o TEMP = %d\n", power_status, temp_measure_raw);
 	  HAL_UART_Transmit(&huart2, &data2, size, HAL_MAX_DELAY);
   }
 #endif
