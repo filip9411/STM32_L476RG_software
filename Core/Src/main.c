@@ -56,7 +56,7 @@
 /* USER CODE BEGIN PV */
 
 uint32_t dma_temp_measure_raw;
-float temp_measure;
+uint32_t dma_vcc_measure_raw;
 uint8_t power_status = 0x00;
 
 /* USER CODE END PV */
@@ -116,6 +116,7 @@ int main(void)
   //HAL_ADC_Start(&hadc1);
   HAL_ADC_Start(&hadc2);
   HAL_ADC_Start_DMA(&hadc1, &dma_temp_measure_raw, 1);
+  HAL_ADC_Start_DMA(&hadc2, &dma_vcc_measure_raw, 1);
 
   // Timer
   HAL_TIM_Base_Start_IT(&htim6);
@@ -232,7 +233,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 	  size = sprintf(data1, "TEST_MESSAGE_UART1_");
 	  HAL_UART_Transmit(&huart1, &data1, size, HAL_MAX_DELAY);
-	  size = sprintf(data2, "TEST_MESSAGE_UART2 POWER_STATUS = %o TEMP = %d\n", power_status, dma_temp_measure_raw);
+	  size = sprintf(data2, "TEST_MESSAGE_UART2 POWER_STATUS = %o TEMP = %d VCC = %d\n", power_status, dma_temp_measure_raw, dma_vcc_measure_raw);
 	  HAL_UART_Transmit(&huart2, &data2, size, HAL_MAX_DELAY);
   }
 #endif
