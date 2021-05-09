@@ -113,8 +113,6 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   // ADC measure
-  //HAL_ADC_Start(&hadc1);
-  HAL_ADC_Start(&hadc2);
   HAL_ADC_Start_DMA(&hadc1, &dma_temp_measure_raw, 1);
   HAL_ADC_Start_DMA(&hadc2, &dma_vcc_measure_raw, 1);
 
@@ -147,11 +145,11 @@ int main(void)
 
 	  if(HAL_GPIO_ReadPin(LTC3128_PGOOD_GPIO_Port, LTC3128_PGOOD_Pin) == 1)
 	  {
-		  power_status |= MASK_LTC3105_PGOOD;
+		  power_status |= MASK_LTC3128_PGOOD;
 	  }
 	  else
 	  {
-		  power_status &= ~MASK_LTC3105_PGOOD;
+		  power_status &= ~MASK_LTC3128_PGOOD;
 	  }
 
     /* USER CODE END WHILE */
