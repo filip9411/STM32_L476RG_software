@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "adc.h"
+#include "dma.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -39,6 +40,10 @@
 
 #define TEST_UART
 
+#define MASK_LTC3105_PGOOD 0x01U
+#define MASK_LTC3109_PGOOD 0x02U
+#define MASK_LTC3128_PGOOD 0x04U
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -50,7 +55,9 @@
 
 /* USER CODE BEGIN PV */
 
-uint16_t ADC_measure;
+uint32_t dma_temp_measure_raw;
+uint32_t dma_vcc_measure_raw;
+uint8_t g_power_status = 0x00U;
 
 /* USER CODE END PV */
 
@@ -97,15 +104,18 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_USART2_UART_Init();
   MX_ADC1_Init();
   MX_USART1_UART_Init();
   MX_ADC2_Init();
   MX_TIM6_Init();
+  MX_UART5_Init();
   /* USER CODE BEGIN 2 */
 
   // ADC measure
-  HAL_ADC_Start(&hadc1);
+  HAL_ADC_Start_DMA(&hadc1, &dma_temp_measure_raw, 1);
+  HAL_ADC_Start_DMA(&hadc2, &dma_vcc_measure_raw, 1);
 
   // Timer
   HAL_TIM_Base_Start_IT(&htim6);
@@ -116,6 +126,32 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  if(HAL_GPIO_ReadPin(LTC3105_PGOOD_GPIO_Port, LTC3105_PGOOD_Pin) == 1)
+	  {
+		  g_power_status |= MASK_LTC3105_PGOOD;
+	  }
+	  else
+	  {
+		  g_power_status &= ~MASK_LTC3105_PGOOD;
+	  }
+
+	  if(HAL_GPIO_ReadPin(LTC3109_PGOOD_GPIO_Port, LTC3109_PGOOD_Pin) == 1)
+	  {
+		  g_power_status |= MASK_LTC3109_PGOOD;
+	  }
+	  else
+	  {
+		  g_power_status &= ~MASK_LTC3109_PGOOD;
+	  }
+
+	  if(HAL_GPIO_ReadPin(LTC3128_PGOOD_GPIO_Port, LTC3128_PGOOD_Pin) == 1)
+	  {
+		  g_power_status |= MASK_LTC3128_PGOOD;
+	  }
+	  else
+	  {
+		  g_power_status &= ~MASK_LTC3128_PGOOD;
+	  }
 
     /* USER CODE END WHILE */
 
@@ -165,9 +201,10 @@ void SystemClock_Config(void)
     Error_Handler();
   }
   PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART1|RCC_PERIPHCLK_USART2
-                              |RCC_PERIPHCLK_ADC;
+                              |RCC_PERIPHCLK_UART5|RCC_PERIPHCLK_ADC;
   PeriphClkInit.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK2;
   PeriphClkInit.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
+  PeriphClkInit.Uart5ClockSelection = RCC_UART5CLKSOURCE_PCLK1;
   PeriphClkInit.AdcClockSelection = RCC_ADCCLKSOURCE_SYSCLK;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
@@ -189,15 +226,16 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 #if defined(TEST_UART)
   if (GPIO_Pin == B1_Pin)
   {
-	  uint8_t data1[20];
-	  uint8_t data2[20];
+	  char data1[20];
+	  char data2[150];
 
-	  uint16_t size = 0;
+	  int size_1 = 0;
+	  int size_2 = 0;
 
-	  size = sprintf(data1, "TEST_MESSAGE_UART2_");
-	  HAL_UART_Transmit(&huart1, &data1, size, HAL_MAX_DELAY);
-	  size = sprintf(data2, "TEST_MESSAGE_UART1_");
-	  HAL_UART_Transmit(&huart2, &data2, size, HAL_MAX_DELAY);
+	  size_1 = sprintf(data1, "TEST_MESSAGE_UART1_");
+	  HAL_UART_Transmit(&huart1, &data1, size_1, HAL_MAX_DELAY);
+	  size_2 = sprintf(data2, "TEST_MESSAGE_UART2 POWER_STATUS = %d TEMP = %d VCC = %d\n", g_power_status, dma_temp_measure_raw, dma_vcc_measure_raw);
+	  HAL_UART_Transmit(&huart5, &data2, size_2, HAL_MAX_DELAY);
   }
 #endif
 }

@@ -63,10 +63,10 @@ void Error_Handler(void);
 #define B1_EXTI_IRQn EXTI15_10_IRQn
 #define SWITCH_Pin GPIO_PIN_1
 #define SWITCH_GPIO_Port GPIOC
-#define USART_TX_Pin GPIO_PIN_2
-#define USART_TX_GPIO_Port GPIOA
-#define USART_RX_Pin GPIO_PIN_3
-#define USART_RX_GPIO_Port GPIOA
+#define UART2_TX_Debug_Pin GPIO_PIN_2
+#define UART2_TX_Debug_GPIO_Port GPIOA
+#define UART2_RX_Debug_Pin GPIO_PIN_3
+#define UART2_RX_Debug_GPIO_Port GPIOA
 #define LTC3109_PGOOD_Pin GPIO_PIN_4
 #define LTC3109_PGOOD_GPIO_Port GPIOA
 #define LD2_Pin GPIO_PIN_5
